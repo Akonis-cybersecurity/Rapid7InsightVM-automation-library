@@ -6,7 +6,7 @@ import pytest
 from sekoia_automation.storage import PersistentJSON
 
 from microsoftdefender_modules import MicrosoftDefenderModule
-from microsoftdefender_modules.connector_graph_api import MicrosoftDefenderGraphAPIAlerts
+from microsoftdefender_modules.connector_microsoft_defender_xdr import MicrosoftDefenderGraphAPIAlerts
 
 LOGGER = logging.getLogger(__name__)
 
