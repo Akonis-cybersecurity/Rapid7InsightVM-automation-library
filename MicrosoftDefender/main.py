@@ -21,4 +21,5 @@ if __name__ == "__main__":
     module.register(UnIsolateMachineAction, "UnIsolateMachineAction")
     module.register(IsolateMachineAction, "IsolateMachineAction")
     module.register(CancelMachineAction, "CancelMachineAction")
+    module.register(CancelMachineAction, "connector_microsoft_defender_xdr")
     module.run()
