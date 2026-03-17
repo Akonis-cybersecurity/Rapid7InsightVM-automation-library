@@ -5,6 +5,7 @@ from typing import Any, Generator
 
 import orjson
 import requests
+from cachetools import Cache, LRUCache
 from dateutil.parser import isoparse
 from sekoia_automation.connector import Connector, DefaultConnectorConfiguration
 from sekoia_automation.storage import PersistentJSON
@@ -36,6 +37,32 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
 
         self.scopes: list = ["https://graph.microsoft.com/.default"]
         self.context = PersistentJSON("context.json", self.data_path)
+
+        self.cache_size = 2000
+        self.events_cache: Cache[str, bool] = self.load_events_cache()
+
+    def load_events_cache(self) -> Cache[str, bool]:
+        """
+        Load the events cache.
+        """
+        cache: Cache[str, bool] = LRUCache(maxsize=self.cache_size)
+
+        with self.context as context:
+            # load the cache from the context
+            events_cache = context.get("events_cache", [])
+
+        for uuid in events_cache:
+            cache[uuid] = True
+
+        return cache
+
+    def save_events_cache(self) -> None:
+        """
+        Save the events cache.
+        """
+        with self.context as context:
+            # save the events cache to the context
+            context["events_cache"] = list(self.events_cache.keys())
 
     @cached_property
     def client(self) -> GraphApiClient:
@@ -98,6 +125,8 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
         self.log(message=f"Querying timerange {start} to {end}.", level="info")
 
         url = "https://graph.microsoft.com/v1.0/security/alerts_v2"
+
+        # Note: even with `gt` we can get the same event for very specific time twice. Thus, we're using cache.
         params: dict[str, Any] | None = {
             "$format": "json",
             "$orderby": "createdDateTime asc",
@@ -132,6 +161,10 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
         for event in batch:
             alert_id = event["id"]
 
+            # Ignore already seen
+            if alert_id in self.events_cache:
+                continue
+
             evidences = event.pop("evidence")
             yield event
 
@@ -157,6 +190,12 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
                         batch_of_events = [orjson.dumps(event).decode("utf-8") for event in batch_of_events]
                         self.push_events_to_intakes(events=batch_of_events)
                         OUTCOMING_EVENTS.labels(intake_key=self.configuration.intake_key).inc(len(batch_of_events))
+
+                        # mark sent events as processed
+                        for event in events:
+                            self.events_cache[event["id"]] = True
+
+                        self.save_events_cache()
 
                     else:
                         self.log(message="No records to forward", level="info")
