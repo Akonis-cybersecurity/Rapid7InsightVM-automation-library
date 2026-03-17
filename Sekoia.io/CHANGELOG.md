@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2026-03-17 - 2.71.0
+
+### Added
+
+- Add custom status and verdict triggers and actions for alert
+
 ## 2026-02-25 - 2.70.0
 
 ### Added
