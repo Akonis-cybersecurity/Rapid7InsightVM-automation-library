@@ -183,8 +183,9 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
             try:
                 duration_start = time.time()
                 for events in self.fetch_events(start, end):
-                    if len(events) > 0:
-                        batch_of_events = [event for event in self.process_events(events)]
+                    batch_of_events = [event for event in self.process_events(events)]
+
+                    if len(batch_of_events) > 0:
                         self.log(message=f"Forwarding {len(batch_of_events)} records", level="info")
 
                         batch_of_events = [orjson.dumps(event).decode("utf-8") for event in batch_of_events]
@@ -200,14 +201,16 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
                     else:
                         self.log(message="No records to forward", level="info")
 
-                    FORWARD_EVENTS_DURATION.labels(intake_key=self.configuration.intake_key).observe(
-                        time.time() - duration_start
-                    )
+                FORWARD_EVENTS_DURATION.labels(intake_key=self.configuration.intake_key).observe(
+                    time.time() - duration_start
+                )
 
             except AuthenticationError as e:
-                self.log(message="Error: {0}".format(e.result.get("error")), level="error")
-                self.log(message="Error description: {0}".format(e.result.get("error_description")), level="error")
-                self.log(message="Correlation ID: {0}".format(e.result.get("correlation_id")), level="error")
+                if e.result:
+                    self.log(message="Error: {0}".format(e.result.get("error")), level="error")
+                    self.log(message="Error description: {0}".format(e.result.get("error_description")), level="error")
+                    self.log(message="Correlation ID: {0}".format(e.result.get("correlation_id")), level="error")
+
                 self.log(str(e), level="critical")
 
             except Exception as ex:

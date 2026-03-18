@@ -248,16 +248,17 @@ def test_stepper_with_cursor(trigger, data_storage):
 
 
 def test_stepper_with_cursor_older_than_30_days(trigger, data_storage):
-    date = datetime.now(timezone.utc)
-    most_recent_date_requested = date - timedelta(days=40)
-    expected_date = date - timedelta(days=30)
     context = PersistentJSON("context.json", data_storage)
+
+    fixed_now = datetime(2026, 3, 16, 1, 12, 00, tzinfo=timezone.utc)
+    most_recent_date_requested = fixed_now - timedelta(days=40)
+    expected_date = fixed_now - timedelta(days=30)
 
     with context as cache:
         cache["most_recent_date_requested"] = most_recent_date_requested.isoformat()
 
-    with patch("microsoftdefender_modules.timestepper.datetime.datetime") as mock_datetime:
-        mock_datetime.now.return_value = datetime.now(timezone.utc)
+    with patch("microsoftdefender_modules.connector_microsoft_defender_xdr.datetime") as mock_datetime:
+        mock_datetime.now.return_value = fixed_now
         mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
         assert trigger.stepper.start.replace(microsecond=0) == expected_date.replace(microsecond=0)
