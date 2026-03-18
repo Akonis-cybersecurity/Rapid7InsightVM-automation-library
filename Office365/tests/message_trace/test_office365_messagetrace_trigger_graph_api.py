@@ -31,8 +31,8 @@ def trigger(symphony_storage):
 
 def test_fetch_events(trigger, requests_mock, message_trace_report_graph_api, start_time, end_time):
     with patch("office365.message_trace.client.auth.msal.ConfidentialClientApplication") as mock_msal:
-        mock_msal.acquire_token_silent = MagicMock()
-        mock_msal.acquire_token_silent.return_value = {"access_token": "TOKEN"}
+        mock_msal.return_value.acquire_token_silent = MagicMock()
+        mock_msal.return_value.acquire_token_silent.return_value = {"access_token": "TOKEN"}
 
         trigger._get_access_token = Mock()
         requests_mock.get(
@@ -46,8 +46,8 @@ def test_fetch_events(trigger, requests_mock, message_trace_report_graph_api, st
 
 def test_fetch_events_wrong_json(trigger, requests_mock, message_trace_report, start_time, end_time):
     with patch("office365.message_trace.client.auth.msal.ConfidentialClientApplication") as mock_msal:
-        mock_msal.acquire_token_silent = MagicMock()
-        mock_msal.acquire_token_silent.return_value = {"access_token": "TOKEN"}
+        mock_msal.return_value.acquire_token_silent = MagicMock()
+        mock_msal.return_value.acquire_token_silent.return_value = {"access_token": "TOKEN"}
 
         trigger._get_access_token = Mock()
         requests_mock.get(
@@ -74,16 +74,17 @@ def test_stepper_with_cursor(trigger, symphony_storage):
 
 
 def test_stepper_with_cursor_older_than_30_days(trigger, symphony_storage):
-    date = datetime.now(timezone.utc)
-    most_recent_date_requested = date - timedelta(days=40)
-    expected_date = date - timedelta(days=30)
     context = PersistentJSON("context.json", symphony_storage)
+
+    fixed_now = datetime(2026, 3, 16, 1, 12, 00, tzinfo=timezone.utc)
+    most_recent_date_requested = fixed_now - timedelta(days=40)
+    expected_date = fixed_now - timedelta(days=30)
 
     with context as cache:
         cache["most_recent_date_requested"] = most_recent_date_requested.isoformat()
 
-    with patch("office365.message_trace.base.datetime") as mock_datetime:
-        mock_datetime.now.return_value = datetime.now(timezone.utc)
+    with patch("office365.message_trace.trigger_office365_messagetrace_graph_api.datetime") as mock_datetime:
+        mock_datetime.now.return_value = fixed_now
         mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
         assert trigger.stepper.start.replace(microsecond=0) == expected_date.replace(microsecond=0)

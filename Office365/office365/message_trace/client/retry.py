@@ -1,5 +1,3 @@
-import time
-
 from urllib3.response import HTTPResponse
 from urllib3.util.retry import Retry as BaseRetry
 
