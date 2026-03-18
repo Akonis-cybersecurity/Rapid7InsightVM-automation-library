@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## 2025-10-20 - 2.16.4
+
+### Fixed
+
+- Fix the serialisation of arrays in the form of a URL-encoded payload
+
 ## 2025-10-20 - 2.16.3
 
 ### Fixed
