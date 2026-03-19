@@ -9,7 +9,6 @@ from functools import cached_property
 from typing import Any, Optional
 
 from dateutil.parser import isoparse
-
 from sekoia_automation.asset_connector import AssetConnector
 from sekoia_automation.asset_connector.models.ocsf.base import (
     Metadata,
@@ -30,9 +29,10 @@ from sekoia_automation.asset_connector.models.ocsf.device import (
     OSTypeStr,
 )
 from sekoia_automation.storage import PersistentJSON
-from sentinelone_module.client import SentinelOneClient
+
 from sentinelone_module.asset_connector.models import SentinelOneAgent
 from sentinelone_module.base import SentinelOneModule
+from sentinelone_module.client import SentinelOneClient
 
 
 class SentinelOneDeviceAssetConnector(AssetConnector):

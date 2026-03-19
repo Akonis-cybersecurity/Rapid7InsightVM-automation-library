@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2026-03-20 - 1.21.9
+
+### Added
+
+- Add action to add hash to the Blocklist
+- Add action to remove hash from the Blocklist
+
+### Changed
+
+- Updated dependencies
+
 ## 2026-02-20 - 1.21.8
 
 ### Fixed
