@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2026-03-19 - 2.20.1
+
+### Changed
+
+- Deprecate old Office 365 Message Trace connectors
+
 ## 2026-03-05 - 2.20.0
 
 ### Added
