@@ -33,28 +33,26 @@ class CreateBlocklistItemAction(SentinelOneAction):
     description = "Create a blocklist item for a SHA1 or SHA256 hash or both"
 
     @staticmethod
-    def check_filters(arguments: CreateBlocklistItemActionArguments) -> None:
+    def check_args(arguments: CreateBlocklistItemActionArguments) -> None:
+        if not arguments.sha_1 and not arguments.sha_256:
+            raise ValueError("At least one of SHA-1 and SHA-256 hashes should be provided")
+
         # Make sure only 1 filter is present
-        args_check = False
-        args_check ^= arguments.filter_tenant_scope
-        args_check ^= arguments.filter_account_ids is not None
-        args_check ^= arguments.filter_site_ids is not None
-        args_check ^= arguments.filter_group_ids is not None
-        if not any(
-            (
-                arguments.filter_site_ids,
-                arguments.filter_group_ids,
-                arguments.filter_account_ids,
-                arguments.filter_tenant_scope,
-            )
-        ):
+        args_check = sum((
+            arguments.filter_tenant_scope,
+            arguments.filter_account_ids is not None,
+            arguments.filter_site_ids is not None,
+            arguments.filter_group_ids is not None
+        ))
+
+        if args_check == 0:
             raise ValueError("Please provide a filter")
 
-        if not args_check:
+        elif args_check > 1:
             raise ValueError("Only one filter should be present")
 
     def run(self, arguments: CreateBlocklistItemActionArguments) -> Any:
-        self.check_filters(arguments)
+        self.check_args(arguments)
 
         payload = ExclusionWithSHA256(
             type="black_hash",
@@ -77,9 +75,6 @@ class CreateBlocklistItemAction(SentinelOneAction):
 
         elif arguments.filter_group_ids:
             params["groupIds"] = arguments.filter_group_ids
-
-        elif arguments.filter_site_ids:
-            params["siteIds"] = arguments.filter_site_ids
 
         result = self.client.exclusions.create_black(exclusion=payload, **params)
         return result.json
