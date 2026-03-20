@@ -38,12 +38,14 @@ class CreateBlocklistItemAction(SentinelOneAction):
             raise ValueError("At least one of SHA-1 and SHA-256 hashes should be provided")
 
         # Make sure only 1 filter is present
-        args_check = sum((
-            arguments.filter_tenant_scope,
-            arguments.filter_account_ids is not None,
-            arguments.filter_site_ids is not None,
-            arguments.filter_group_ids is not None
-        ))
+        args_check = sum(
+            (
+                arguments.filter_tenant_scope,
+                arguments.filter_account_ids is not None,
+                arguments.filter_site_ids is not None,
+                arguments.filter_group_ids is not None,
+            )
+        )
 
         if args_check == 0:
             raise ValueError("Please provide a filter")
