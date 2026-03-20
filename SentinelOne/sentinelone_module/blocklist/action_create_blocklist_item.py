@@ -11,7 +11,7 @@ class ExclusionWithSHA256(Exclusion):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self.sha256Value: str = kwargs.get("sha256Value", None)
+        self.sha256Value: str | None = kwargs.get("sha256Value", None)
 
 
 class CreateBlocklistItemActionArguments(BaseModel):
@@ -64,7 +64,7 @@ class CreateBlocklistItemAction(SentinelOneAction):
             source=arguments.source,
         )
 
-        params = {}
+        params: dict[str, bool | list[str]] = {}
 
         if arguments.filter_tenant_scope:
             params["tenant"] = True
