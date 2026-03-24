@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2026-03-24 - 2.71.2
+
+### Fixed
+
+- Retrieve `custom_status` and `verdict` UUIDs directly from the alert object instead of from the relationship
+
 ## 2026-03-23 - 2.71.1
 
 ### Fixed
