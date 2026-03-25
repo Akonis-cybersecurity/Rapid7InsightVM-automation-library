@@ -6,6 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 import requests_mock
+from pydantic import ValidationError
 from requests.exceptions import ConnectionError
 from tenacity import Retrying, wait_none
 
@@ -211,6 +212,18 @@ def test_request_with_params(symphony_storage, params):
         del result["elapsed"]
         json.dumps(result)
         assert result["url"] == "https://api.sekoia.io/?param1=value1&param2=value2"
+
+
+@pytest.mark.parametrize(
+    "url",
+    ["C:\\Windows\\system32\\virus.exe", "google.com"],
+)
+def test_url_validation(symphony_storage, url):
+    action = RequestAction(data_path=symphony_storage)
+    action.module.configuration = {}
+
+    with pytest.raises(ValidationError):
+        action.run({"method": "get", "url": url})
 
 
 def test_basic_auth(symphony_storage):
