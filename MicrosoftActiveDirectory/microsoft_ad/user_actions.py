@@ -142,7 +142,10 @@ class EnableUserAction(MicrosoftADAction):
             user_dn = user_query[0][0]
             current_uac = user_query[0][1]
             self.log(f"[EnableUser] Resolved DN: {user_dn}", level="debug")
-            self.log(f"[EnableUser] Current UAC: {current_uac} (binary: {bin(current_uac) if current_uac is not None else 'None'})", level="debug")
+            self.log(
+                f"[EnableUser] Current UAC: {current_uac} (binary: {bin(current_uac) if current_uac is not None else 'None'})",
+                level="debug",
+            )
             self._enable_user(user_dn, current_uac, arguments.username)
             self.log(f"[EnableUser] User {arguments.username} enabled successfully", level="info")
             return None
@@ -224,7 +227,10 @@ class DisableUserAction(MicrosoftADAction):
             user_dn = user_query[0][0]
             current_uac = user_query[0][1]
             self.log(f"[DisableUser] Resolved DN: {user_dn}", level="debug")
-            self.log(f"[DisableUser] Current UAC: {current_uac} (binary: {bin(current_uac) if current_uac is not None else 'None'})", level="debug")
+            self.log(
+                f"[DisableUser] Current UAC: {current_uac} (binary: {bin(current_uac) if current_uac is not None else 'None'})",
+                level="debug",
+            )
             self._disable_user(user_dn, current_uac, arguments.username)
             self.log(
                 f"[DisableUser] User {arguments.username} has been disabled successfully",
