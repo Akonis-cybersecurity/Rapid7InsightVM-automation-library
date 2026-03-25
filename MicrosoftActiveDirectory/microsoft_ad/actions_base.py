@@ -13,9 +13,25 @@ class MicrosoftADAction(Action, LDAPClient):
     def client(self):
         return self.ldap_client
 
-    def search_userdn_query(self, username, basedn):
-        safe_username = escape_filter_chars(username)
-        search_filter = f"(|(samaccountname={safe_username})(userPrincipalName={safe_username})(mail={safe_username})(givenName={safe_username}))"
+    def search_userdn_query(self, username, basedn, email=None):
+        has_username = bool(username)
+        has_email = bool(email)
+
+        if not has_username and not has_email:
+            raise ValueError("At least one of 'username' or 'email' must be provided")
+
+        if has_username:
+            safe_username = escape_filter_chars(username)
+            or_filter = f"(|(samaccountname={safe_username})(userPrincipalName={safe_username})(mail={safe_username})(givenName={safe_username}))"
+
+        if has_username and has_email:
+            safe_email = escape_filter_chars(email)
+            search_filter = f"(&{or_filter}(mail={safe_email}))"
+        elif has_username:
+            search_filter = or_filter
+        else:
+            safe_email = escape_filter_chars(email)
+            search_filter = f"(mail={safe_email})"
 
         self.log(f"[search_userdn_query] Search base: {basedn}", level="debug")
         self.log(f"[search_userdn_query] Filter: {search_filter}", level="debug")
