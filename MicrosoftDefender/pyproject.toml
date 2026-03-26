@@ -23,7 +23,7 @@ python = ">=3.10,<3.12"
 sekoia-automation-sdk = "^1.15.1"
 structlog = "^24.4.0"
 stix2-patterns = "^2.0.0"
-requests = "^2.32.3"
+requests = "^2.33.0"
 requests-ratelimiter = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
