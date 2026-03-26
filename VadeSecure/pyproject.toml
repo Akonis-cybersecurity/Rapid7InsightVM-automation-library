@@ -34,7 +34,7 @@ exclude = ["tests/*"]
 python = ">=3.10,<3.12"
 sekoia-automation-sdk = "^1.17.1"
 python-dateutil = "^2.8"
-requests = "^2.31.0"
+requests = "^2.33.0"
 requests-ratelimiter = "^0.7.0"
 
 [tool.coverage.run]
