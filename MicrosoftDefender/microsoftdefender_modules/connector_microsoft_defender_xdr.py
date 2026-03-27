@@ -70,7 +70,7 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
             tenant_id=self.module.configuration.tenant_id,
             client_id=self.module.configuration.app_id,
             client_secret=self.module.configuration.app_secret,
-            scopes=["https://graph.microsoft.com/.default"],
+            scopes=self.scopes,
         )
 
     @cached_property
@@ -165,7 +165,7 @@ class MicrosoftDefenderGraphAPIAlerts(Connector):
             if alert_id in self.events_cache:
                 continue
 
-            evidences = event.pop("evidence")
+            evidences = event.pop("evidence", [])
             yield event
 
             for evidence in evidences:

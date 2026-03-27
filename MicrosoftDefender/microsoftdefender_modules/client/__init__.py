@@ -1,5 +1,4 @@
 import requests
-from pyrate_limiter import Duration, Limiter, RequestRate
 from requests_ratelimiter import LimiterAdapter
 
 from .auth import ApiKeyAuthentication, GraphApiKeyAuthentication
@@ -51,14 +50,13 @@ class GraphApiClient(requests.Session):
             scopes=scopes,
         )
 
-        # This API has a throttling limit of 100 requests per 5 minutes
-        # https://learn.microsoft.com/en-us/graph/api/messagetracingroot-list-messagetraces?view=graph-rest-1.0
-        limiter = Limiter(RequestRate(limit=100, interval=Duration.MINUTE * 5))
+        # This API has a throttling limit of 150 requests per minute
+        # https://learn.microsoft.com/en-us/graph/throttling-limits#security-detections-and-incidents-service-limits
 
         self.mount(
             "https://",
             LimiterAdapter(
-                limiter=limiter,
+                per_minute=150,
                 max_retries=Retry(
                     total=nb_retries,
                     backoff_factor=1,

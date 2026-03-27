@@ -276,3 +276,17 @@ def test_stepper_without_cursor(trigger, data_storage):
         mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
         assert trigger.stepper.start == datetime(2023, 3, 22, 11, 55, 28, tzinfo=timezone.utc)
+
+
+def test_process_events(trigger, message):
+    batch_of_events = message["value"]
+    processed_events = list(trigger.process_events(batch_of_events))
+    assert len(processed_events) == 5  # 1 alert + 4 evidences
+
+    event_alert = processed_events[0]
+    assert "evidence" not in event_alert
+
+    alert_id = event_alert["id"]
+    for evidence in processed_events[1:]:
+        assert "alertId" in evidence
+        assert evidence["alertId"] == alert_id
