@@ -1,5 +1,6 @@
 import time
 import uuid
+from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from posixpath import join as urljoin
 from threading import Event, Lock, Thread
@@ -434,17 +435,28 @@ class AlertEventsThresholdTrigger(SecurityAlertsTrigger):
         self._validated_config: AlertEventsThresholdConfiguration | None = None
         self._http_session: requests.Session | None = None
         self._events_api_path: str | None = None
-        self._alert_locks: dict[str, Lock] = {}
+        self._alert_locks: OrderedDict[str, Lock] = OrderedDict()
         self._locks_lock: Lock = Lock()
+        self._max_alert_locks: int = 10_000
         self._time_threshold_thread: Thread | None = None
         self._time_threshold_stop_event: Event = Event()
 
     def _get_alert_lock(self, alert_uuid: str) -> Lock:
-        """Get or create a per-alert lock to prevent concurrent processing."""
+        """Get or create a per-alert lock, with LRU eviction to bound memory growth.
+
+        Alerts that are filtered out (by rule_filter) or malformed never reach
+        persisted state, so their locks cannot be freed by the state cleanup path.
+        An LRU bound ensures the dict stays below _max_alert_locks entries.
+        """
         with self._locks_lock:
-            if alert_uuid not in self._alert_locks:
-                self._alert_locks[alert_uuid] = Lock()
-            return self._alert_locks[alert_uuid]
+            if alert_uuid in self._alert_locks:
+                self._alert_locks.move_to_end(alert_uuid)
+                return self._alert_locks[alert_uuid]
+            if len(self._alert_locks) >= self._max_alert_locks:
+                self._alert_locks.popitem(last=False)
+            lock = Lock()
+            self._alert_locks[alert_uuid] = lock
+            return lock
 
     def _start_time_threshold_thread(self) -> None:
         """Start the periodic time threshold check thread."""
@@ -775,7 +787,6 @@ class AlertEventsThresholdTrigger(SecurityAlertsTrigger):
             if reason_key in trigger_reason:
                 EVENTS_FORWARDED.labels(trigger_type=reason_key).inc()
 
-        THRESHOLD_CHECKS.labels(triggered="true").inc()
         if self.state_manager is not None:
             STATE_SIZE.set(len(self.state_manager.get_all_alerts()))
 
@@ -1084,24 +1095,43 @@ class AlertEventsThresholdTrigger(SecurityAlertsTrigger):
             True if job completed successfully, False otherwise
 
         Raises:
-            requests.HTTPError: If a status check fails
+            requests.HTTPError: If a non-transient status check fails (4xx)
         """
         if self._http_session is None:
             raise RuntimeError("HTTP session not initialized")
 
         start_time = time.time()
 
-        # Poll until job is done (status 0=pending, 1=running, 2+=done)
+        # Poll until job is done (status 0=pending, 1=running, 2+=done).
+        # Transient errors (timeouts, 5xx) are logged and retried on the next
+        # poll cycle to stay consistent with the other API helpers.
         while True:
-            response = self._http_session.get(
-                f"{self._events_api_path}/search/jobs/{job_uuid}",
-                timeout=20,
-            )
-            response.raise_for_status()
-            status = response.json()["status"]
-
-            if status >= 2:
-                return True
+            try:
+                response = self._http_session.get(
+                    f"{self._events_api_path}/search/jobs/{job_uuid}",
+                    timeout=20,
+                )
+                response.raise_for_status()
+                status = response.json()["status"]
+            except (requests.exceptions.Timeout, urllib3.exceptions.TimeoutError) as exc:
+                self.log(
+                    message=f"Transient timeout polling search job {job_uuid}, retrying",
+                    level="warning",
+                    job_uuid=job_uuid,
+                    error=str(exc),
+                )
+            except requests.exceptions.HTTPError as exc:
+                if exc.response is not None and exc.response.status_code < 500:
+                    raise  # 4xx: permanent failure, propagate immediately
+                self.log(
+                    message=f"Transient HTTP error polling search job {job_uuid}, retrying",
+                    level="warning",
+                    job_uuid=job_uuid,
+                    error=str(exc),
+                )
+            else:
+                if status >= 2:
+                    return True
 
             if time.time() - start_time > timeout:
                 self.log(
