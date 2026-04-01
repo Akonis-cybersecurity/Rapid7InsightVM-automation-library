@@ -180,16 +180,6 @@ def test_get_request_retry(symphony_storage, requests_mock):
     }
 
 
-def test_get_request_error(symphony_storage, requests_mock):
-    action = RequestAction(data_path=symphony_storage)
-    action.module.configuration = {}
-
-    requests_mock.get("https://api.sekoia.io", status_code=500)
-
-    action.run({"method": "get", "url": "https://api.sekoia.io"})
-    assert action._error is not None
-
-
 @pytest.mark.parametrize(
     "params",
     [

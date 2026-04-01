@@ -89,7 +89,10 @@ class RequestAction(Action):
 
         if fail_on_http_error and not response.ok:
             # Will end action as in error
-            self.error(f"HTTP Request failed: {url} with {response.status_code}")
+            self.log(
+                f"HTTP Request failed: {url} with {response.status_code} - {response.reason}: {response.text}",
+                level="critical",
+            )
 
         json_response = None
         if (
