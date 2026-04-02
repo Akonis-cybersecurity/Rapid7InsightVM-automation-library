@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Use export assets instead of get assets details for each vulnerability
+- Use exported assets instead of fetching asset details for each vulnerability
 
 ## 2026-02-23 - 1.0.12
 
