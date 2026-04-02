@@ -65,3 +65,32 @@ def parse_session(raw: bytes) -> list[dict[str, Any]]:
         result.append(event_record)
 
     return result
+
+
+def parse_vault_activity(raw: bytes) -> list[dict[str, Any]]:
+    namespace = {"ns": "http://www.beyondtrust.com/sra/namespaces/API/reporting"}
+
+    root = etree.fromstring(raw)
+
+    result = []
+    events = root.xpath("/ns:vault_account_activity_list/ns:vault_account_activity", namespaces=namespace)
+    for event in events:
+        event_record = {
+            "timestamp": event.attrib["timestamp"],
+            "account_id": event.attrib["account"],
+            "event_type": event.attrib["event_type"],
+            "data": event.find("ns:data", namespaces=namespace).text,
+        }
+
+        performed_by_elem = event.find("ns:performed_by", namespaces=namespace)
+
+        if performed_by_elem is not None:
+            event_record["performed_by"] = {
+                "id": performed_by_elem.attrib["id"],
+                "type": performed_by_elem.attrib["type"],
+                "name": performed_by_elem.text,
+            }
+
+        result.append(event_record)
+
+    return result

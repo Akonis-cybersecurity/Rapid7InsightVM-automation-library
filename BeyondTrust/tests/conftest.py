@@ -99,3 +99,26 @@ def error_response_xml():
 <error xmlns="http://www.beyondtrust.com/sra/namespaces/API/reporting" code="authentication_failed">
 Authentication failed. Please check your credentials.
 </error>"""
+
+
+@pytest.fixture
+def vault_activity_list():
+    return (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<vault_account_activity_list xmlns="http://www.beyondtrust.com/sra/namespaces/API/reporting">'
+        b'   <start_time timestamp="986204380">2001-04-02T09:39:40+00:00</start_time>'
+        b'   <end_time timestamp="1775127348">2026-04-02T10:55:48+00:00</end_time>'
+        b'   <vault_account_activity timestamp="1773671926" event_type="Account Created" account="1">'
+        b'      <performed_by id="2" type="User">John Doe</performed_by>'
+        b"      <data></data>"
+        b"   </vault_account_activity>"
+        b'   <vault_account_activity timestamp="1773672020" event_type="Password Changed" account="1">'
+        b'      <performed_by id="2" type="User">John Doe</performed_by>'
+        b"      <data>Manually Edited</data>"
+        b"   </vault_account_activity>"
+        b'   <vault_account_activity timestamp="1773672107" event_type="Account Deleted" account="1">'
+        b'      <performed_by id="2" type="User">John Doe</performed_by>'
+        b"      <data></data>"
+        b"   </vault_account_activity>"
+        b"</vault_account_activity_list>\n"
+    )
