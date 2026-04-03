@@ -66,157 +66,6 @@ mapping:
         }
 
   fields:
-    # USER IDENTIFICATION
-    - source: "id"
-      target: "user.uid"
-      type: "string"
-      logic: "Direct mapping of Microsoft Entra ID user UUID"
-      description: "Microsoft Entra ID user unique identifier (UUID)"
-
-    - source: "userPrincipalName"
-      target: "user.name"
-      type: "string"
-      logic: "Direct mapping of user principal name"
-      description: "User principal name (UPN) - email-like format"
-
-    - source: "displayName"
-      target: "user.full_name"
-      type: "string"
-      logic: "Direct mapping of display name"
-      description: "User display name"
-
-    # ACCOUNT INFORMATION
-    - source: "userPrincipalName"
-      target: "user.account.uid"
-      type: "string"
-      logic: "Direct mapping of user principal name"
-      description: "Entra ID account identifier (UPN)"
-
-    - source: "userPrincipalName"
-      target: "user.account.name"
-      type: "string"
-      logic: "Direct mapping of user principal name"
-      description: "Account username (UPN)"
-
-    - source: "static: Entra ID"
-      target: "user.account.type"
-      type: "string"
-      logic: "Always 'Entra ID'"
-      description: "Account type identifier"
-
-    - source: "static: 41"
-      target: "user.account.type_id"
-      type: "integer"
-      logic: "Always 41 for Entra ID account type"
-      description: "OCSF account type ID"
-
-    # CONTACT INFORMATION
-    - source: "mail"
-      target: "user.email_addr"
-      type: "string"
-      logic: "Direct mapping of email address"
-      description: "User email address"
-
-    - source: "mobilePhone"
-      target: "user.phone"
-      type: "string"
-      logic: "Direct mapping of mobile phone"
-      description: "Mobile phone number"
-
-    - source: "businessPhones | first"
-      target: "user.work_phone"
-      type: "string"
-      logic: "Extract first business phone number"
-      description: "Work phone number"
-
-    # ORGANIZATIONAL INFORMATION
-    - source: "department"
-      target: "user.department"
-      type: "string"
-      logic: "Direct mapping of department attribute"
-      description: "User department"
-
-    - source: "jobTitle"
-      target: "user.job_title"
-      type: "string"
-      logic: "Direct mapping of job title"
-      description: "User job title"
-
-    - source: "employeeId"
-      target: "user.employee_id"
-      type: "string"
-      logic: "Direct mapping of employee ID"
-      description: "Employee ID"
-
-    - source: "officeLocation"
-      target: "user.office_location"
-      type: "string"
-      logic: "Direct mapping of office location"
-      description: "Office location"
-
-    # USER STATUS & SECURITY
-    - source: "accountEnabled"
-      target: "user.is_enabled"
-      type: "boolean"
-      logic: "Direct mapping of account enabled status"
-      description: "Whether user account is enabled"
-
-    - source: "memberOf | length > 0"
-      target: "user.has_groups"
-      type: "boolean"
-      logic: "true if user is member of any group, false otherwise"
-      description: "Whether user belongs to any groups"
-
-    - source: "memberOf"
-      target: "user.groups"
-      type: "array[object]"
-      logic: "Create Group objects with group name as uid and name"
-      description: "Group memberships"
-
-    - source: "assignedLicenses | length > 0"
-      target: "user.has_licenses"
-      type: "boolean"
-      logic: "true if user has assigned licenses, false otherwise"
-      description: "Whether user has assigned licenses"
-
-    - source: "assignedLicenses | length"
-      target: "user.licenses_count"
-      type: "integer"
-      logic: "Count of assigned licenses"
-      description: "Number of assigned licenses"
-
-    # ON-PREMISES INFORMATION
-    - source: "onPremisesUserPrincipalName"
-      target: "user.on_premises_upn"
-      type: "string"
-      logic: "Direct mapping of on-premises UPN"
-      description: "On-premises user principal name"
-
-    - source: "onPremisesSyncEnabled"
-      target: "user.is_synced"
-      type: "boolean"
-      logic: "Direct mapping of on-premises sync status"
-      description: "Whether user is synced from on-premises"
-
-    # TEMPORAL INFORMATION
-    - source: "createdDateTime"
-      target: "user.created_time"
-      type: "integer"
-      logic: "Convert ISO 8601 to Unix epoch"
-      description: "User creation timestamp (Unix epoch)"
-
-    - source: "lastSignInDateTime"
-      target: "user.last_login_time"
-      type: "integer"
-      logic: "Convert ISO 8601 to Unix epoch; null if never signed in"
-      description: "Last sign-in timestamp (Unix epoch)"
-
-    - source: "createdDateTime"
-      target: "time"
-      type: "integer"
-      logic: "Convert ISO 8601 to Unix epoch for OCSF event timestamp"
-      description: "OCSF event timestamp (user discovery time)"
-
     # OCSF EVENT CLASSIFICATION
     - source: "static: 2"
       target: "activity_id"
@@ -254,16 +103,16 @@ mapping:
       logic: "Always 5003 for User Inventory Info"
       description: "OCSF class UID"
 
-    - source: "computed: 500300 + activity_id"
+    - source: "static: 500302"
       target: "type_uid"
       type: "integer"
-      logic: "Base 500300 + activity_id (2 = 500302)"
+      logic: "Always 500302 for User Inventory Info"
       description: "OCSF type UID"
 
-    - source: "computed: class_name + ': ' + activity_name"
+    - source: "static: User Inventory Info: Collect"
       target: "type_name"
       type: "string"
-      logic: "Concatenate 'User Inventory Info: Collect'"
+      logic: "Always 'User Inventory Info: Collect'"
       description: "OCSF type name"
 
     - source: "static: Informational"
@@ -278,6 +127,13 @@ mapping:
       logic: "Always 1 for Informational severity"
       description: "OCSF severity ID"
 
+    # TIMESTAMP
+    - source: "createdDateTime"
+      target: "time"
+      type: "integer"
+      logic: "Convert ISO 8601 to Unix epoch for OCSF event timestamp"
+      description: "OCSF event timestamp (user discovery time)"
+
     # METADATA
     - source: "static: Microsoft Entra ID"
       target: "metadata.product.name"
@@ -285,13 +141,117 @@ mapping:
       logic: "Always 'Microsoft Entra ID'"
       description: "Source product name"
 
+    - source: "static: 1.0"
+      target: "metadata.product.version"
+      type: "string"
+      logic: "Unknown version, using 1.0 as default"
+      description: "Source product version"
+
     - source: "static: 1.6.0"
       target: "metadata.version"
       type: "string"
       logic: "Fixed OCSF schema version"
       description: "OCSF schema version"
 
+    # USER ATTRIBUTES
+    - source: "id"
+      target: "user.has_mfa"
+      type: "boolean"
+      logic: "Fetch MFA status using user.id; true if user has MFA enabled, false otherwise"
+      description: "User MFA enabled status (requires additional API call using user ID)"
+
+    - source: "userPrincipalName"
+      target: "user.name"
+      type: "string"
+      logic: "Direct mapping of user principal name or unknown if not available"
+      description: "User principal name"
+
+    - source: "id"
+      target: "user.uid"
+      type: "string"
+      logic: "Direct mapping of Microsoft Entra ID user UUID"
+      description: "Microsoft Entra ID user unique identifier (UUID)"
+
+    - source: "id"
+      target: "user.groups"
+      type: "array[object]"
+      logic: "Create Group objects with group name as uid and name"
+      description: "Group memberships"
+
+    - source: "displayName"
+      target: "user.full_name"
+      type: "string"
+      logic: "Direct mapping of full name"
+      description: "User full name"
+
+    - source: "mail"
+      target: "user.email_addr"
+      type: "string"
+      logic: "Direct mapping of email address"
+      description: "User email address"
+
+    - source: "id"
+      target: "user.account.uid"
+      type: "string"
+      logic: "Direct mapping of the 'id' field as the unique identifier for the Entra ID account"
+      description: "Entra ID account identifier (UPN)"
+
+    - source: "userPrincipalName"
+      target: "user.account.name"
+      type: "string"
+      logic: "Direct mapping of user principal name"
+      description: "Account username (UPN)"
+
+    - source: "static: Entra ID"
+      target: "user.account.type"
+      type: "string"
+      logic: "Always 'Entra ID'"
+      description: "Account type identifier"
+
+    - source: "static: 41"
+      target: "user.account.type_id"
+      type: "integer"
+      logic: "Always 41 for Entra ID account type"
+      description: "OCSF account type ID"
+
+    - source: "displayName"
+      target: "user.display_name"
+      type: "string"
+      logic: "Direct mapping of display name"
+      description: "User display name"
+
+    - source: "UserPrincipalName"
+      target: "user.domain"
+      type: "string"
+      logic: "Extract domain from userPrincipalName"
+      description: "Domain of the user account"
+
+    - source: "Calculated: userType"
+      target: "user.type_id"
+      type: "integer"
+      logic: "If user is admin so type_id is 2, otherwise 1"
+      description: "User type id classification"
+
+    - source: "Calculated: userTypeID"
+      target: "user.type"
+      type: "string"
+      logic: "If user is admin so type_id is ADMIN, otherwise USER"
+      description: "User type classification"
+
+    - source: "CompanyName"
+      target: "user.org.name"
+      type: "string"
+      logic: "Direct mapping of organization name"
+      description: "Organization name"
+
+    - source: "OfficeLocation"
+      target: "user.org.ou_name"
+      type: "string"
+      logic: "Direct mapping of office location"
+      description: "Office location as organizational unit"
+
     # OCSF ENRICHMENT - USER ACCESS INFORMATION
+
     - source: "accountEnabled"
       target: "enrichments[0].data.is_enabled"
       type: "boolean"
@@ -303,30 +263,6 @@ mapping:
       type: "integer"
       logic: "Convert ISO 8601 to Unix timestamp; return null if never signed in"
       description: "Last sign-in timestamp (Unix epoch)"
-
-    - source: "userType"
-      target: "enrichments[0].data.user_type"
-      type: "string"
-      logic: "Direct mapping of user type (Member, Guest, etc.)"
-      description: "User type classification"
-
-    - source: "assignedLicenses | length"
-      target: "enrichments[0].data.assigned_licenses_count"
-      type: "integer"
-      logic: "Count of assigned licenses"
-      description: "Number of assigned Microsoft 365 licenses"
-
-    - source: "static: access_control"
-      target: "enrichments[0].name"
-      type: "string"
-      logic: "Always 'access_control' for Entra ID enrichment type"
-      description: "Enrichment object name"
-
-    - source: "static: entra_id"
-      target: "enrichments[0].value"
-      type: "string"
-      logic: "Always 'entra_id' for Entra ID user access enrichment"
-      description: "Enrichment object value"
 
   ocsf_samples:
     - name: "User Inventory Info: Collect"
