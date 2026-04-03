@@ -104,7 +104,7 @@ def test_next_batch_sleep_until_next_round(trigger, vault_activity_list):
         assert mock_time.sleep.call_count == 1
 
 
-def test_fetch_events_face_error(trigger, sessions_list_xml_with_one, session_xml):
+def test_fetch_events_face_error(trigger):
     with requests_mock.Mocker() as mock_requests:
         mock_requests.register_uri(
             "POST",
