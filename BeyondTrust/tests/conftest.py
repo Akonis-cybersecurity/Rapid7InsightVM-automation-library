@@ -99,3 +99,39 @@ def error_response_xml():
 <error xmlns="http://www.beyondtrust.com/sra/namespaces/API/reporting" code="authentication_failed">
 Authentication failed. Please check your credentials.
 </error>"""
+
+
+@pytest.fixture
+def team_xml():
+    return b"""<?xml version="1.0" encoding="UTF-8"?>
+<team_activity_list xmlns="http://www.beyondtrust.com/sra/namespaces/API/reporting">
+    <start_time timestamp="1772323200">2026-03-01T00:00:00+00:00</start_time>
+    <end_time timestamp="1773679977">2026-03-16T16:52:57+00:00</end_time>
+    <team_activity name="Integration" id="1">
+        <logged_in_representatives>
+        </logged_in_representatives>
+        <events>
+            <event timestamp="1773679963" event_type="Conference Member Added">
+                <performed_by gsnumber="15" type="representative">John Doe</performed_by>
+                <data>
+                    <value name="os" value="Unknown"/>
+                    <value name="private_ip" value="Unknown"/>
+                    <value name="private_name" value="John Doe"/>
+                    <value name="public_ip" value="4.3.2.1:41286"/>
+                    <value name="public_name" value="John Doe"/>
+                    <value name="support_teams" value="Integration"/>
+                    <value name="user_id" value="2"/>
+                </data>
+            </event>
+            <event timestamp="1773679963" event_type="Conference Member State Changed">
+                <performed_by gsnumber="15" type="representative">John Doe</performed_by>
+                <data>
+                    <value name="os" value="Unknown"/>
+                    <value name="private_ip" value="Unknown"/>
+                    <value name="public_ip" value="4.3.2.1:41286"/>
+                    <value name="state" value="connected"/>
+                </data>
+            </event>
+        </events>
+    </team_activity>
+</team_activity_list>"""
