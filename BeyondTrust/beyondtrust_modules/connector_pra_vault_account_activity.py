@@ -26,7 +26,7 @@ class BeyondTrustPRAVaultAccountActivityConnector(BeyondTrustBaseConnector):
             time_unit=TimeUnit.SECOND,
             path=self.data_path,
             start_at=timedelta(days=1),
-            ignore_older_than=timedelta(days=14),
+            ignore_older_than=timedelta(days=7),
         )
         self.from_date = self.cursor.offset
 
