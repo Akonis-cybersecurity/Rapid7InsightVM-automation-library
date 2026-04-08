@@ -163,9 +163,7 @@ class EntraIDAssetConnector(AsyncAssetConnector):
                 else None
             ),
             last_time_password_change=(
-                user.last_password_change_date_time.timestamp()
-                if user.last_password_change_date_time
-                else None
+                user.last_password_change_date_time.timestamp() if user.last_password_change_date_time else None
             ),
         )
 

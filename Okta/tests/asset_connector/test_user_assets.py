@@ -3,7 +3,12 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from sekoia_automation.asset_connector.models.ocsf.user import Group, UserDataObject, UserEnrichmentObject, UserOCSFModel
+from sekoia_automation.asset_connector.models.ocsf.user import (
+    Group,
+    UserDataObject,
+    UserEnrichmentObject,
+    UserOCSFModel,
+)
 
 from okta_modules.asset_connector.user_assets import OktaUserAssetConnector
 
