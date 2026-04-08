@@ -79,7 +79,4 @@ dmypy.json
 .vscode/
 */.devcontainer/*
 */test_end_to_end*
-
-# Specific
-.reviews/
-HarfangLab/.github/skills/update-asset-connector/SKILL.md
+*/.github/skills/*
