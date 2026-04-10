@@ -82,6 +82,18 @@ class SecurityAlertsTrigger(_SEKOIANotificationBaseTrigger):
                 "name": alert.get("status", {}).get("name"),
                 "uuid": alert.get("status", {}).get("uuid"),
             },
+            "custom_status": {
+                "name": alert.get("custom_status", {}).get("label"),
+                "level": alert.get("custom_status", {}).get("level"),
+                "stage": alert.get("custom_status", {}).get("stage"),
+                "uuid": alert.get("custom_status_uuid"),
+            },
+            "verdict": {
+                "name": alert.get("verdict", {}).get("label"),
+                "level": alert.get("verdict", {}).get("level"),
+                "stage": alert.get("verdict", {}).get("stage"),
+                "uuid": alert.get("verdict_uuid"),
+            },
             "created_at": alert.get("created_at"),
             "urgency": alert.get("urgency", {}).get("current_value"),
             "entity": alert.get("entity", {}),
@@ -121,6 +133,7 @@ class SecurityAlertsTrigger(_SEKOIANotificationBaseTrigger):
                 "comments": False,
                 "countermeasures": False,
                 "history": False,
+                "custom_status": True,
             },
         )
 
