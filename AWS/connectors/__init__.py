@@ -7,7 +7,7 @@ from typing import Any, Optional
 
 from sekoia_automation.aio.connector import AsyncConnector
 from sekoia_automation.connector import Connector, DefaultConnectorConfiguration
-from aws_helpers.base import AwsModule, AwsModuleConfiguration
+from aws_helpers.base import AwsModule
 from connectors.provider import AwsAccountProvider
 
 from .metrics import EVENTS_LAG, FORWARD_EVENTS_DURATION, MESSAGES_AGE, OUTCOMING_EVENTS

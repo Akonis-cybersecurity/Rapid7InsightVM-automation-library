@@ -80,7 +80,7 @@ class AwsClient(Generic[AwsConfigurationT]):
             )
 
     @cached_property
-    def get_session(self) -> AioSession:
+    def session(self) -> AioSession:
         """
         Get AWS session.
 
@@ -118,7 +118,7 @@ class AwsClient(Generic[AwsConfigurationT]):
         if not _region_name:
             raise ValueError("Region name is required. You should specify it.")
 
-        return self.get_session.create_client(
+        return self.session.create_client(
             client_name,
             region_name=_region_name,
         )

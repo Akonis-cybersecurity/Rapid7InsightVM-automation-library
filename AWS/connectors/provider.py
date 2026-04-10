@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from aws_helpers.base import AwsModule
 from aws_helpers.client import AwsClientConfiguration
