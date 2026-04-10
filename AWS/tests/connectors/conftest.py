@@ -6,7 +6,8 @@ from unittest.mock import AsyncMock
 import pytest
 from faker import Faker
 
-from connectors import AwsModule, AwsModuleConfiguration
+from aws_helpers.base import AwsModuleConfiguration
+from connectors import AwsModule
 
 
 @pytest.fixture

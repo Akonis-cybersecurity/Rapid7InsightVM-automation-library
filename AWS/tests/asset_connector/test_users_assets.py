@@ -6,7 +6,8 @@ from dateutil.parser import isoparse
 from sekoia_automation.asset_connector.models.ocsf.user import UserOCSFModel
 
 from asset_connector.users_assets import AwsUser, AwsUsersAssetConnector
-from connectors import AwsModule, AwsModuleConfiguration
+from aws_helpers.base import AwsModuleConfiguration
+from connectors import AwsModule
 
 
 @pytest.fixture

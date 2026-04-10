@@ -20,7 +20,8 @@ from sekoia_automation.asset_connector.models.ocsf.device import (
 from sekoia_automation.asset_connector.models.ocsf.group import Group
 
 from asset_connector.device_assets import AwsDevice, AwsDeviceAssetConnector
-from connectors import AwsModule, AwsModuleConfiguration
+from aws_helpers.base import AwsModuleConfiguration
+from connectors import AwsModule
 
 
 @pytest.fixture
