@@ -16,6 +16,7 @@ class _OidcHost(Protocol):
     module: AwsModule
     token: str
     logs_url: str
+    callback_url: str
     _cached_aws_config: AwsClientConfiguration | None
     _config_expiration: datetime | None
 
@@ -59,8 +60,15 @@ class OidcAwsMixin:
     def url(self: _OidcHost) -> str:
         """OIDC token endpoint URL."""
         base_url = self.base_url
-        node_type = "trigger" if self.module.trigger_configuration_uuid else "connector"
-        node_uuid = self.module.trigger_configuration_uuid or self.module.connector_configuration_uuid
+        if self.module.trigger_configuration_uuid:
+            node_type = "trigger"
+            node_uuid = self.module.trigger_configuration_uuid
+        elif self.module.connector_configuration_uuid:
+            node_type = "connector"
+            node_uuid = self.module.connector_configuration_uuid
+        else:
+            node_type = "action"
+            node_uuid = self.callback_url.rsplit("/", 2)[1] if self.callback_url else "unknown"
         return urljoin(
             base_url,
             f"api/v1/symphony/oidc/token?node_type={node_type}&node_uuid={node_uuid}&audience=sts.amazonaws.com",
