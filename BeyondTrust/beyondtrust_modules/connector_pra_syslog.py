@@ -51,10 +51,10 @@ class BeyondTrustPRASyslogConnector(BeyondTrustBaseConnector):
                 EVENTS_LAG.labels(intake_key=self.configuration.intake_key).set(0)
                 return None
 
-        tmp_path = Path(tempfile.mktemp(suffix=".zip", dir=self._data_path))
-        with open(tmp_path, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp_file:
+     tmp_path = Path(tmp_file.name)
+     for chunk in response.iter_content(chunk_size=8192):
+         tmp_file.write(chunk)
 
         return tmp_path
 
