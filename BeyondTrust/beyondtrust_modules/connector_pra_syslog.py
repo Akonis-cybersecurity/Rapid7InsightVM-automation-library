@@ -11,11 +11,9 @@ from sekoia_automation.connector import DefaultConnectorConfiguration
 
 from . import BeyondTrustModule
 from .connector_base import BeyondTrustBaseConnector
-from .logging import get_logger
 from .metrics import EVENTS_LAG, FORWARD_EVENTS_DURATION, INCOMING_MESSAGES, OUTCOMING_EVENTS
 from .syslog_helpers import extract_when_timestamp, iter_reassembled_records
 
-logger = get_logger()
 
 
 class BeyondTrustPRASyslogConfiguration(DefaultConnectorConfiguration):
