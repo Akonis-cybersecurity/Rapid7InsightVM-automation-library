@@ -15,7 +15,6 @@ from .metrics import EVENTS_LAG, FORWARD_EVENTS_DURATION, INCOMING_MESSAGES, OUT
 from .syslog_helpers import extract_when_timestamp, iter_reassembled_records
 
 
-
 class BeyondTrustPRASyslogConfiguration(DefaultConnectorConfiguration):
     frequency: int = Field(30 * 60, description="Batch frequency in seconds")
 
@@ -36,7 +35,15 @@ class BeyondTrustPRASyslogConnector(BeyondTrustBaseConnector):
         self.from_date = self.cursor.offset
 
     def _download_syslog_zip(self) -> Path | None:
-        """Fetch syslog ZIP from BeyondTrust API and save to a temp file."""
+        """
+        Fetch syslog ZIP from BeyondTrust API and save to a temp file.
+
+        Based on official documentation we get a zip file in case of success.
+        Otherwise in case of errors we get xml
+
+        Docs:
+            https://docs.beyondtrust.com/rs/reference/reporting-api#syslog
+        """
         response = self.client.get_syslog()
 
         if self._handle_response_error(response):
@@ -47,14 +54,15 @@ class BeyondTrustPRASyslogConnector(BeyondTrustBaseConnector):
         if "xml" in content_type or "text" in content_type:
             if self._check_xml_error(response):
                 EVENTS_LAG.labels(intake_key=self.configuration.intake_key).set(0)
+
                 return None
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp_file:
-     tmp_path = Path(tmp_file.name)
-     for chunk in response.iter_content(chunk_size=8192):
-         tmp_file.write(chunk)
+            tmp_path = Path(tmp_file.name)
+            for chunk in response.iter_content(chunk_size=8192):
+                tmp_file.write(chunk)
 
-        return tmp_path
+            return tmp_path
 
     def _iter_syslog_lines(self, zip_path: Path) -> Generator[str, None, None]:
         """Yield lines lazily from all files inside the ZIP."""
@@ -73,39 +81,43 @@ class BeyondTrustPRASyslogConnector(BeyondTrustBaseConnector):
             if zip_path is None:
                 return
 
-            lines = self._iter_syslog_lines(zip_path)
-            payloads = iter_reassembled_records(lines)
+            try:
+                lines = self._iter_syslog_lines(zip_path)
+                payloads = iter_reassembled_records(lines)
 
-            most_recent_timestamp = self.from_date
-            events_batch: list[str] = []
+                most_recent_timestamp = self.from_date
+                events_batch: list[str] = []
 
-            for payload in payloads:
-                when_ts = extract_when_timestamp(payload)
-                if when_ts is None:
-                    continue
-                if when_ts <= self.from_date:
-                    continue
+                for payload in payloads:
+                    when_ts = extract_when_timestamp(payload)
+                    if when_ts is None:
+                        continue
+                    if when_ts <= self.from_date:
+                        continue
 
-                events_batch.append(payload)
-                INCOMING_MESSAGES.labels(intake_key=self.configuration.intake_key).inc()
+                    events_batch.append(payload)
+                    INCOMING_MESSAGES.labels(intake_key=self.configuration.intake_key).inc()
 
-                if when_ts > most_recent_timestamp:
-                    most_recent_timestamp = when_ts
+                    if when_ts > most_recent_timestamp:
+                        most_recent_timestamp = when_ts
 
-                if len(events_batch) >= 1000:
+                    if len(events_batch) >= 1000:
+                        yield events_batch
+                        events_batch = []
+
+                if events_batch:
                     yield events_batch
-                    events_batch = []
 
-            if events_batch:
-                yield events_batch
+                if most_recent_timestamp > self.from_date:
+                    self.from_date = most_recent_timestamp
+                    self.cursor.offset = most_recent_timestamp
 
-            if most_recent_timestamp > self.from_date:
-                self.from_date = most_recent_timestamp
-                self.cursor.offset = most_recent_timestamp
-
-                now = int(datetime.now(timezone.utc).timestamp())
-                current_lag = now - most_recent_timestamp
-                EVENTS_LAG.labels(intake_key=self.configuration.intake_key).set(current_lag)
+                    now = int(datetime.now(timezone.utc).timestamp())
+                    current_lag = now - most_recent_timestamp
+                    EVENTS_LAG.labels(intake_key=self.configuration.intake_key).set(current_lag)
+            except zipfile.BadZipFile:
+                self.log("Downloaded content is not a valid ZIP archive", level="warning")
+                return
 
         finally:
             if zip_path is not None and zip_path.exists():

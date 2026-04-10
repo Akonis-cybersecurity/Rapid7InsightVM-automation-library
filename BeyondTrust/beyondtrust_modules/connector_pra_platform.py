@@ -9,10 +9,7 @@ from sekoia_automation.connector import DefaultConnectorConfiguration
 from . import BeyondTrustModule
 from .connector_base import BeyondTrustBaseConnector
 from .helpers import parse_session, parse_session_end_time, parse_session_list
-from .logging import get_logger
 from .metrics import EVENTS_LAG, INCOMING_MESSAGES
-
-logger = get_logger()
 
 
 class BeyondTrustPRAPlatformConfiguration(DefaultConnectorConfiguration):

@@ -254,6 +254,35 @@ def test_zip_cleanup(trigger, data_storage):
         assert remaining_zips == []
 
 
+def test_fetch_events_handles_non_zip_content(trigger, data_storage):
+    """When the API returns non-ZIP content, log a warning and yield no events."""
+    plain_text = b"This is not a ZIP archive"
+
+    with requests_mock.Mocker() as mock_requests:
+        _mock_oauth(mock_requests)
+        mock_requests.register_uri(
+            "POST",
+            "https://tenant.beyondtrustcloud.com/api/reporting",
+            content=plain_text,
+            headers={"Content-Type": "application/zip"},
+        )
+
+        trigger.from_date = 0
+        all_events = list(trigger.fetch_events())
+
+        assert all_events == []
+        trigger.log.assert_any_call(
+            "Downloaded content is not a valid ZIP archive",
+            level="warning",
+        )
+
+        # Verify temp file cleanup still happens
+        import os
+
+        remaining_zips = [f for f in os.listdir(data_storage) if f.endswith(".zip")]
+        assert remaining_zips == []
+
+
 def test_fetch_events_no_events_after_checkpoint(trigger):
     """When all events are older than checkpoint, no events should be yielded."""
     zip_bytes = _make_syslog_zip(SYSLOG_LINES)
