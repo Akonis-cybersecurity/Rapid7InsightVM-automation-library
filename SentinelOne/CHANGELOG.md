@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2026-04-10 - 1.21.9
+
+### Fixed
+
+- Fix field mappings in `device_mapping.yml` to align with the actual OCSF models
+
 ## 2026-02-20 - 1.21.8
 
 ### Fixed
