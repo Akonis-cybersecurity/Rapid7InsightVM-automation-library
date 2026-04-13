@@ -46,6 +46,13 @@ mapping:
           "threatCount": 0,
           "domain": "example.com",
           "computerName": "LAPTOP-JOHN-DEV",
+          "uuid": "ff819e70af13be381993075eb0ce5f2f6de05be2",
+          "accountId": "226494730938493000",
+          "accountName": "Acme Corp",
+          "externalId": "ext-475482087580431375",
+          "activeThreats": 0,
+          "infected": false,
+          "isUpToDate": true,
           "userId": "u1234567890abcdef",
           "userName": "john.developer@example.com",
           "userFullName": "John Developer"
@@ -443,68 +450,72 @@ mapping:
             "version": "1.6.0"
           },
           "device": {
-            "uid": "475482087580431375",
+            "uid": "ff819e70af13be381993075eb0ce5f2f6de05be2",
+            "uid_alt": "475482087580431375",
             "name": "LAPTOP-JOHN-DEV",
             "hostname": "LAPTOP-JOHN-DEV",
+            "eid": "ext-475482087580431375",
             "domain": "example.com",
-            "type": "computer",
-            "machine_type": "laptop",
-            "serial_number": "ABC123DEF456GHI",
-            "manufacturer": "Dell",
+            "type": "Desktop",
+            "type_id": 2,
             "model": "Latitude 5540",
-            "cpu_count": 8,
-            "core_count": 8,
-            "memory_size": 16384,
+            "vendor_name": "Latitude 5540",
             "ip": "192.168.1.100",
-            "ipv4_addresses": [
-              "192.168.1.100",
-              "10.0.0.50"
-            ],
-            "ipv6_addresses": [
-              "fe80::1234:5678:90ab:cdef"
-            ],
-            "mac_address": "00:1A:2B:3C:4D:5E",
-            "mac_addresses": [
-              "00:1A:2B:3C:4D:5E"
-            ],
-            "is_enabled": true,
-            "is_online": true,
-            "is_encrypted": true,
-            "is_firewall_enabled": true,
-            "is_tamper_protected": true,
-            "threat_level": "good",
-            "threat_count": 0,
-            "agent_status": "active",
-            "agent_version": "23.4.1.1001",
-            "user_uid": "u1234567890abcdef",
-            "user_name": "john.developer@example.com",
-            "user_full_name": "John Developer",
+            "subnet": null,
+            "is_managed": true,
+            "is_compliant": true,
+            "risk_level": "Info",
+            "risk_level_id": 0,
+            "risk_score": 0,
+            "org": {
+              "name": "Acme Corp",
+              "uid": "226494730938493000"
+            },
+            "region": null,
             "created_time": 1685854800,
-            "updated_time": 1725184200,
             "last_seen_time": 1725184200,
-            "last_incident_time": null,
             "os": {
-              "name": "windows",
-              "type": "Windows",
-              "version": "Windows 10 Pro",
-              "build": "22H2"
+              "name": "Windows 10 Pro 22H2",
+              "type": "windows",
+              "type_id": 100
             }
           },
           "enrichments": [
             {
-              "name": "device_security",
-              "value": "sentinelone_device",
+              "name": "Firewall",
+              "value": "Enabled",
               "data": {
-                "threat_level": "good",
-                "threat_count": 0,
-                "is_enabled": true,
-                "agent_status": "active",
-                "agent_version": "23.4.1.1001",
-                "is_encrypted": true,
-                "is_firewall_enabled": true,
-                "is_tamper_protected": true,
-                "last_seen": 1725184200
+                "Firewall_status": "Enabled"
               }
+            },
+            {
+              "name": "Domain",
+              "value": "example.com",
+              "data": {
+                "Full_qualified_domain_name": "example.com"
+              }
+            },
+            {
+              "name": "Users",
+              "value": "john.developer@example.com",
+              "data": {
+                "Users": ["john.developer@example.com"]
+              }
+            },
+            {
+              "name": "Update Status",
+              "value": "Up to Date",
+              "data": {}
+            },
+            {
+              "name": "Active Threats",
+              "value": "0",
+              "data": {}
+            },
+            {
+              "name": "Infection Status",
+              "value": "Clean",
+              "data": {}
             }
           ]
         }

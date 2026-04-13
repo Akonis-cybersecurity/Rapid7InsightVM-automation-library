@@ -27,22 +27,15 @@ mapping:
             "registered": true,
             "secureHardwarePresent": true,
             "diskEncryptionType": "BitLocker",
-            "osUpdateTime": "2025-08-20T14:30:00.000Z"
+            "sid": "S-1-5-21-3623811015-3361044348-30300820-1013"
           },
-          "deviceType": "Computer",
-          "managed": true,
-          "complianceStatus": "COMPLIANT",
-          "userId": "00u1a2b3c4d5e6f7g8h9",
           "_links": {
-            "self": [
-              {
-              [...]
-            ]
+            "self": [...]
           }
         }
 
-    - name: "Okta Non-Compliant Device"
-      description: "Okta device with non-compliant status"
+    - name: "Okta iOS Device"
+      description: "Okta managed iOS device"
       data: |
         {
           "id": "goodef456ghiJKLMNO",
@@ -61,18 +54,10 @@ mapping:
             "udid": "00008120-0015E40A2E59801E",
             "registered": true,
             "secureHardwarePresent": true,
-            "diskEncryptionType": "FileVault",
-            "osUpdateTime": "2025-08-01T10:00:00.000Z"
+            "diskEncryptionType": "FileVault"
           },
-          "deviceType": "MobileDevice",
-          "managed": true,
-          "complianceStatus": "NON_COMPLIANT",
-          "userId": "00u2c3d4e5f6g7h8i9j0",
           "_links": {
-            "self": [
-              {
-              [...]
-            ]
+            "self": [...]
           }
         }
 
@@ -280,9 +265,10 @@ mapping:
       logic: "Calculate enrichment data with key Okta device details such as encryption type, serial number, secure hardware presence, and compliance status to provide additional context on device security posture"
       description: "Data field of the enrichment containing key Okta device details for additional context on device security posture"
 
+
   ocsf_samples:
-    - name: "Device Inventory Info: Collect"
-      description: "Transformed Okta device to OCSF Device Inventory Info event"
+    - name: "Device Inventory Info: Collect (Windows)"
+      description: "Transformed Okta Windows device to OCSF Device Inventory Info event"
       data: |
         {
           "activity_id": 2,
@@ -298,47 +284,107 @@ mapping:
           "time": 1685854800,
           "metadata": {
             "product": {
-              "name": "Okta"
+              "name": "Okta",
+              "vendor_name": "Okta",
+              "version": "N/A"
             },
             "version": "1.6.0"
           },
           "device": {
             "uid": "gooabc123defGHIJKL",
+            "uid_alt": "ABC123DEF456",
             "name": "LAPTOP-MARY-001",
             "hostname": "LAPTOP-MARY-001",
-            "type": "Computer",
-            "serial_number": "ABC123DEF456",
-            "manufacturer": "Dell",
+            "type": "Desktop",
+            "type_id": 2,
+            "vendor_name": "Dell",
             "model": "Latitude 5540",
-            "is_enabled": true,
-            "status": "ACTIVE",
+            "udid": null,
+            "imei_list": null,
             "is_managed": true,
-            "is_registered": true,
-            "compliance_status": "COMPLIANT",
-            "has_secure_hardware": true,
-            "encryption_type": "BitLocker",
-            "user_uid": "00u1a2b3c4d5e6f7g8h9",
+            "is_compliant": true,
+            "is_trusted": true,
             "created_time": 1685854800,
-            "updated_time": 1725184200,
+            "first_seen_time": 1685854800,
             "last_seen_time": 1725184200,
-            "os_update_time": 1724044200,
             "os": {
               "name": "Windows",
-              "type": "Windows",
-              "version": "10.0.22621"
+              "type": "windows",
+              "type_id": 100
             }
           },
           "enrichments": [
             {
-              "name": "device_security",
-              "value": "okta_device",
+              "name": "device_info",
+              "value": "hardware_and_security",
               "data": {
-                "compliance_status": "COMPLIANT",
-                "is_enabled": true,
-                "is_managed": true,
-                "has_secure_hardware": true,
-                "encryption_type": "BitLocker",
-                "last_seen": 1725184200
+                "Storage_encryption": {
+                  "partitions": {
+                    "full": "Enabled"
+                  }
+                },
+                "Users": ["windows_sid:S-1-5-21-3623811015-3361044348-30300820-1013"]
+              }
+            }
+          ]
+        }
+
+    - name: "Device Inventory Info: Collect (iOS)"
+      description: "Transformed Okta iOS device to OCSF Device Inventory Info event"
+      data: |
+        {
+          "activity_id": 2,
+          "activity_name": "Collect",
+          "category_name": "Discovery",
+          "category_uid": 5,
+          "class_name": "Device Inventory Info",
+          "class_uid": 5001,
+          "type_name": "Device Inventory Info: Collect",
+          "type_uid": 500102,
+          "severity": "Informational",
+          "severity_id": 1,
+          "time": 1681545600,
+          "metadata": {
+            "product": {
+              "name": "Okta",
+              "vendor_name": "Okta",
+              "version": "N/A"
+            },
+            "version": "1.6.0"
+          },
+          "device": {
+            "uid": "goodef456ghiJKLMNO",
+            "uid_alt": "A2R4P7B9C1D2E3F4G5",
+            "name": "iPhone-ROBERT-001",
+            "hostname": "iPhone-ROBERT-001",
+            "type": "Mobile",
+            "type_id": 5,
+            "vendor_name": "Apple",
+            "model": "iPhone 14 Pro",
+            "udid": "00008120-0015E40A2E59801E",
+            "imei_list": ["356938035643809"],
+            "is_managed": true,
+            "is_compliant": true,
+            "is_trusted": true,
+            "created_time": 1681545600,
+            "first_seen_time": 1681545600,
+            "last_seen_time": 1725184200,
+            "os": {
+              "name": "iOS",
+              "type": "ios",
+              "type_id": 301
+            }
+          },
+          "enrichments": [
+            {
+              "name": "device_info",
+              "value": "hardware_and_security",
+              "data": {
+                "Storage_encryption": {
+                  "partitions": {
+                    "full": "Enabled"
+                  }
+                }
               }
             }
           ]

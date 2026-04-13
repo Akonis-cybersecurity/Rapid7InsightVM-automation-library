@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## 2026-04-10 - 1.0.13
+## 2026-04-10 - 1.0.14
 
 ### Fixed
 
 - Fix field mappings in `vulnerability_mapping.yml` to align with the actual OCSF models.
+
+## 2026-03-04 - 1.0.13
+
+### Changed
+
+- Use exported assets instead of fetching asset details for each vulnerability
 
 ## 2026-02-23 - 1.0.12
 

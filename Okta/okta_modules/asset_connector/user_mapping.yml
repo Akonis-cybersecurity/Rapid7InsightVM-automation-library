@@ -299,10 +299,12 @@ mapping:
           "type_uid": 500302,
           "severity": "Informational",
           "severity_id": 1,
-          "time": 1591234567,
+          "time": 1591234567.0,
           "metadata": {
             "product": {
-              "name": "Okta"
+              "name": "Okta",
+              "vendor_name": "Okta",
+              "version": "N/A"
             },
             "version": "1.6.0"
           },
@@ -310,38 +312,29 @@ mapping:
             "uid": "00oa1bcdefg2EXAMPLE",
             "name": "mary.jones@example.com",
             "full_name": "Mary Jones",
-            "first_name": "Mary",
-            "last_name": "Jones",
+            "display_name": "Mary Jones",
             "email_addr": "mary.jones@example.com",
-            "is_enabled": true,
-            "status": "ACTIVE",
-            "department": "Finance",
-            "job_title": "Financial Analyst",
-            "employee_id": "EMP456",
-            "office_location": "New York, NY",
-            "phone": "+1-555-234-5678",
-            "work_phone": "+1-555-234-5678",
-            "created_time": 1591234567,
-            "activated_time": 1591235100,
-            "last_login_time": 1691230000,
-            "password_last_changed_time": 1673346000,
-            "status_changed_time": 1691230000,
-            "updated_time": 1691230000,
-            "has_groups": true,
+            "uid_alt": "mary.jones@example.com",
+            "domain": "example.com",
+            "has_mfa": true,
+            "type_id": null,
+            "type": null,
             "account": {
-              "uid": "mary.jones@example.com",
+              "uid": "00oa1bcdefg2EXAMPLE",
               "name": "mary.jones@example.com",
-              "type": "Okta",
-              "type_id": 42
+              "type": "Other",
+              "type_id": 99
+            },
+            "org": {
+              "name": "example.com",
+              "ou_name": "Finance"
             },
             "groups": [
               {
                 "uid": "00gj3k4l5mnopqrst",
-                "name": "Finance Users"
-              },
-              {
-                "uid": "00gh8i9j0klmnopq",
-                "name": "All Users"
+                "name": "Finance Users",
+                "desc": "Finance department group",
+                "privileges": []
               }
             ]
           },
@@ -350,11 +343,9 @@ mapping:
               "name": "access_control",
               "value": "okta",
               "data": {
-                "user_status": "ACTIVE",
                 "is_enabled": true,
-                "last_login": 1691230000,
-                "password_last_changed": 1673346000,
-                "groups_count": 2
+                "last_logon": "2025-08-26T09:30:00.000Z",
+                "last_time_password_change": 1736507400.0
               }
             }
           ]

@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## 2026-03-25 - 1.34.2
+## 2026-03-25 - 1.35.1
 
 ### Changed
 
 - Update the yaml file for asset connector
+
+## 2026-03-26 - 1.35.0
+
+### Added
+
+- Add STS support with temporary credentials caching
 
 ## 2026-03-25 - 1.34.1
 
