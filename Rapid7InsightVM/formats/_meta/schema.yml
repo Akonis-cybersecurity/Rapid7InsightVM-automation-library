@@ -1,0 +1,10 @@
+uuid: 2f1de086-9131-46ef-a43e-45bd0baff18d
+name: Rapid7 InsightVM
+slug: rapid7insightvm
+description: >-
+  Vulnerability findings from Rapid7 InsightVM. Covers new detected vulnerabilities
+  and remediated vulnerabilities across managed assets, enriched with host context.
+data_sources:
+  Vulnerability scanner: "Asset and vulnerability findings from the Rapid7 InsightVM Cloud Integrations API"
+automation_connector_uuid: bbda443f-a826-4855-a854-cbac42ff0480
+automation_module_uuid: 06a7f9ec-60cc-46ee-9d37-89906093d861

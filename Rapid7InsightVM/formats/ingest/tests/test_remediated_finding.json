@@ -1,0 +1,9 @@
+{
+  "message": "{\"id\": \"452534235-25a7-40a3-9321-28ce0b5cc90e\", \"ip\": \"10.1.0.128\", \"host_name\": \"server01.example.com\", \"os_family\": \"Linux\", \"os_description\": \"Red Hat Enterprise Linux 7.9\", \"risk_score\": 18250, \"critical_vulnerabilities\": 3, \"severe_vulnerabilities\": 48, \"last_assessed_for_vulnerabilities\": \"2026-04-14T10:19:42.611Z\", \"tags\": [{\"name\": \"production\", \"type\": \"SITE\"}], \"finding_type\": \"remediated\", \"finding\": {\"vulnerability_id\": \"ssh-weak-ciphers\", \"status\": \"NOT_VULNERABLE\", \"first_found\": \"2026-01-10T08:00:00Z\", \"last_found\": \"2026-04-13T09:00:00Z\"}}",
+  "sekoiaio": {
+    "intake": {
+      "dialect": "Rapid7InsightVM",
+      "dialect_uuid": "2f1de086-9131-46ef-a43e-45bd0baff18d"
+    }
+  }
+}

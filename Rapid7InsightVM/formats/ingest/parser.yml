@@ -1,0 +1,148 @@
+name: rapid7insightvm
+
+pipeline:
+  - name: parsed_event
+    description: Parse the JSON asset+finding event pushed by the connector
+    external:
+      name: json.parse-json
+      properties:
+        input_field: "{{ original.message }}"
+        output_field: message
+
+  - name: set_common_fields
+  - name: set_host
+  - name: set_new_finding
+  - name: set_remediated_finding
+  - name: cleanup
+
+stages:
+  set_common_fields:
+    actions:
+      - set:
+          observer.vendor: "Rapid7"
+          observer.product: "InsightVM"
+          event.kind: "event"
+          event.category: "{{ ['vulnerability'] }}"
+          event.type: "{{ ['info'] }}"
+          event.dataset: "rapid7insightvm.vulnerability"
+          event.module: "rapid7insightvm"
+
+  set_host:
+    actions:
+      # Timestamp from last vulnerability assessment
+      - set:
+          "@timestamp": >-
+            {%- set ts = parsed_event.message.last_assessed_for_vulnerabilities -%}
+            {{ ts if '.' in ts else ts.replace('Z', '.000000Z') }}
+        filter: >-
+          {{ parsed_event.message.last_assessed_for_vulnerabilities is defined and
+             parsed_event.message.last_assessed_for_vulnerabilities is not none and
+             parsed_event.message.last_assessed_for_vulnerabilities is string }}
+
+      - set:
+          host.ip: "{{ parsed_event.message.ip }}"
+        filter: >-
+          {{ parsed_event.message.ip is defined and
+             parsed_event.message.ip is not none }}
+
+      - set:
+          host.hostname: "{{ parsed_event.message.host_name }}"
+          host.name: "{{ parsed_event.message.host_name }}"
+        filter: >-
+          {{ parsed_event.message.host_name is defined and
+             parsed_event.message.host_name is not none }}
+
+      - set:
+          host.os.family: "{{ parsed_event.message.os_family }}"
+        filter: >-
+          {{ parsed_event.message.os_family is defined and
+             parsed_event.message.os_family is not none }}
+
+      - set:
+          host.os.full: "{{ parsed_event.message.os_description }}"
+        filter: >-
+          {{ parsed_event.message.os_description is defined and
+             parsed_event.message.os_description is not none }}
+
+      - set:
+          host.risk.static_score: "{{ parsed_event.message.risk_score }}"
+        filter: >-
+          {{ parsed_event.message.risk_score is defined and
+             parsed_event.message.risk_score is not none }}
+
+      # Extract tag names from the tags array (e.g. [{"name": "production", "type": "SITE"}])
+      - set:
+          tags: "{{ parsed_event.message.tags | map(attribute='name') | list }}"
+        filter: >-
+          {{ parsed_event.message.tags is defined and
+             parsed_event.message.tags is not none and
+             parsed_event.message.tags | length > 0 }}
+
+  set_new_finding:
+    actions:
+      # Core event action + vulnerability identity + human-readable message
+      - set:
+          event.action: "vulnerability-detected"
+          vulnerability.id: "{{ parsed_event.message.finding.vulnerability_id }}"
+          vulnerability.reference: "https://www.rapid7.com/db/vulnerabilities/{{ parsed_event.message.finding.vulnerability_id }}"
+          message: "Vulnerability {{ parsed_event.message.finding.vulnerability_id }} detected on {{ parsed_event.message.host_name }}"
+        filter: >-
+          {{ parsed_event.message.finding_type == 'new' and
+             parsed_event.message.finding.vulnerability_id is defined and
+             parsed_event.message.finding.vulnerability_id is not none }}
+
+      # Severity: VULNERABLE_EXPL → critical (exploitable, confirmed)
+      - set:
+          vulnerability.severity: "critical"
+        filter: >-
+          {{ parsed_event.message.finding_type == 'new' and
+             parsed_event.message.finding.status is defined and
+             parsed_event.message.finding.status == 'VULNERABLE_EXPL' }}
+
+      # Severity: VULNERABLE_VERS → high (version-based match)
+      - set:
+          vulnerability.severity: "high"
+        filter: >-
+          {{ parsed_event.message.finding_type == 'new' and
+             parsed_event.message.finding.status is defined and
+             parsed_event.message.finding.status == 'VULNERABLE_VERS' }}
+
+      # Severity: VULNERABLE_POTENTIAL → medium (potential, unconfirmed)
+      - set:
+          vulnerability.severity: "medium"
+        filter: >-
+          {{ parsed_event.message.finding_type == 'new' and
+             parsed_event.message.finding.status is defined and
+             parsed_event.message.finding.status == 'VULNERABLE_POTENTIAL' }}
+
+      # Network transport protocol (lowercase per ECS)
+      - set:
+          network.transport: "{{ parsed_event.message.finding.protocol | lower }}"
+        filter: >-
+          {{ parsed_event.message.finding_type == 'new' and
+             parsed_event.message.finding.protocol is defined and
+             parsed_event.message.finding.protocol is not none }}
+
+      # Network port as string
+      - set:
+          network.application: "{{ parsed_event.message.finding.port | string }}"
+        filter: >-
+          {{ parsed_event.message.finding_type == 'new' and
+             parsed_event.message.finding.port is defined and
+             parsed_event.message.finding.port is not none }}
+
+  set_remediated_finding:
+    actions:
+      - set:
+          event.action: "vulnerability-remediated"
+          vulnerability.id: "{{ parsed_event.message.finding.vulnerability_id }}"
+          message: "Vulnerability {{ parsed_event.message.finding.vulnerability_id }} remediated on {{ parsed_event.message.host_name }}"
+        filter: >-
+          {{ parsed_event.message.finding_type == 'remediated' and
+             parsed_event.message.finding.vulnerability_id is defined and
+             parsed_event.message.finding.vulnerability_id is not none }}
+
+  cleanup:
+    actions:
+      - delete:
+          - parsed_event

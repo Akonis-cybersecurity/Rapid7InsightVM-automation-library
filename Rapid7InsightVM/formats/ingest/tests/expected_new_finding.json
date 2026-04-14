@@ -1,0 +1,38 @@
+{
+  "@timestamp": "2026-04-14T10:19:42.611Z",
+  "event": {
+    "action": "vulnerability-detected",
+    "category": ["vulnerability"],
+    "dataset": "rapid7insightvm.vulnerability",
+    "kind": "event",
+    "module": "rapid7insightvm",
+    "type": ["info"]
+  },
+  "host": {
+    "hostname": "server01.example.com",
+    "ip": "10.1.0.128",
+    "name": "server01.example.com",
+    "os": {
+      "family": "Linux",
+      "full": "Red Hat Enterprise Linux 7.9"
+    },
+    "risk": {
+      "static_score": 18250
+    }
+  },
+  "message": "Vulnerability unix-anonymous-root-logins detected on server01.example.com",
+  "network": {
+    "application": "22",
+    "transport": "tcp"
+  },
+  "observer": {
+    "product": "InsightVM",
+    "vendor": "Rapid7"
+  },
+  "tags": ["production"],
+  "vulnerability": {
+    "id": "unix-anonymous-root-logins",
+    "reference": "https://www.rapid7.com/db/vulnerabilities/unix-anonymous-root-logins",
+    "severity": "critical"
+  }
+}
