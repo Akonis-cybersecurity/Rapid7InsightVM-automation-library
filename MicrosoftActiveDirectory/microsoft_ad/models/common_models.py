@@ -53,8 +53,9 @@ class LDAPUserAttributes(BaseModel):
     objectCategory: str | None = None
     dSCorePropagationData: list[datetime.datetime] | None = None
     mail: str | None = None
-    member_of: list[str] | None = None
+    member_of: list[str] | None = Field(None, alias="memberOf")
 
     class Config:
         # Accept datetime objects with any tzinfo (e.g. ldap3's OffsetTzInfo)
         arbitrary_types_allowed = True
+        allow_population_by_field_name = True
