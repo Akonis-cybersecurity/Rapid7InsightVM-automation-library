@@ -1,0 +1,32 @@
+{
+  "name": "Get InsightVM Asset",
+  "description": "Retrieves the full details of a single Rapid7 InsightVM asset by its identifier, including OS info, tags, vulnerabilities, and risk score.",
+  "docker_parameters": "get-insightvm-asset",
+  "uuid": "33f1edef-a5a9-48de-b260-45bdf5965a93",
+  "arguments": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Get Asset Arguments",
+    "properties": {
+      "asset_id": {
+        "description": "InsightVM asset identifier (e.g. '452534235-25a7-40a3-9321-28ce0b5cc90e-default-asset-199')",
+        "type": "string"
+      }
+    },
+    "required": ["asset_id"]
+  },
+  "results": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "InsightVM Asset",
+    "properties": {
+      "id": { "type": "string" },
+      "ip": { "type": "string" },
+      "host_name": { "type": "string" },
+      "risk_score": { "type": "number" },
+      "critical_vulnerabilities": { "type": "integer" },
+      "severe_vulnerabilities": { "type": "integer" },
+      "os_description": { "type": "string" }
+    }
+  }
+}

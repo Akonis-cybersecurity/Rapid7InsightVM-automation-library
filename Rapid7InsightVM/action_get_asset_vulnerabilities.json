@@ -1,0 +1,43 @@
+{
+  "name": "Get InsightVM Asset Vulnerabilities",
+  "description": "Retrieves all vulnerability findings for a specific Rapid7 InsightVM asset, paginating through all results. Returns new and remediated findings (and optionally unchanged ones) matching the severity filter.",
+  "docker_parameters": "get-insightvm-asset-vulnerabilities",
+  "uuid": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+  "arguments": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Get Asset Vulnerabilities Arguments",
+    "properties": {
+      "asset_id": {
+        "description": "InsightVM asset identifier",
+        "type": "string"
+      },
+      "severity_filter": {
+        "description": "Vulnerability severity filter using InsightVM Query Builder syntax (e.g. \"severity IN ['Critical', 'Severe']\")",
+        "type": "string",
+        "default": "severity IN ['Critical', 'Severe']"
+      },
+      "include_same": {
+        "description": "Include unchanged vulnerabilities in addition to new and remediated ones",
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "required": ["asset_id"]
+  },
+  "results": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "title": "Asset Vulnerability Findings",
+    "items": {
+      "type": "object",
+      "properties": {
+        "vulnerability_id": { "type": "string" },
+        "status": { "type": "string" },
+        "since": { "type": "string" },
+        "cvss_v3_score": { "type": "number" },
+        "cves": { "type": "string" }
+      }
+    }
+  }
+}

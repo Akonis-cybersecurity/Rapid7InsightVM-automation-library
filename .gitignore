@@ -83,3 +83,6 @@ dmypy.json
 # Specific
 .reviews/
 */.github/skills/*
+
+# Akonis internal — never commit to the public Sekoia fork
+CLAUDE.md

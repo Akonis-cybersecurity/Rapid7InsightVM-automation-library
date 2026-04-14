@@ -1,0 +1,39 @@
+{
+  "name": "Get InsightVM Remediated Findings",
+  "description": "Retrieves all vulnerability findings that were remediated since a given date across all Rapid7 InsightVM assets. Paginates through all results. Each finding is annotated with the source asset identifier, IP, and host name.",
+  "docker_parameters": "get-insightvm-remediated-findings",
+  "uuid": "d4e5f6a7-b8c9-0123-defa-234567890123",
+  "arguments": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Get Remediated Findings Arguments",
+    "properties": {
+      "since": {
+        "description": "ISO 8601 datetime (e.g. '2024-01-15T00:00:00Z') — returns findings remediated since this point in time",
+        "type": "string",
+        "format": "date-time"
+      },
+      "severity_filter": {
+        "description": "Vulnerability severity filter using InsightVM Query Builder syntax (e.g. \"severity IN ['Critical', 'Severe']\")",
+        "type": "string"
+      }
+    },
+    "required": ["since"]
+  },
+  "results": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "title": "Remediated Vulnerability Findings",
+    "items": {
+      "type": "object",
+      "properties": {
+        "vulnerability_id": { "type": "string" },
+        "status": { "type": "string" },
+        "since": { "type": "string" },
+        "asset_id": { "type": "string" },
+        "asset_ip": { "type": "string" },
+        "asset_host_name": { "type": "string" }
+      }
+    }
+  }
+}

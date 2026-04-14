@@ -1,0 +1,54 @@
+{
+  "name": "Search InsightVM Assets",
+  "description": "Searches Rapid7 InsightVM assets by IP address, host name, tag, OS family, and/or vulnerability severity. Returns the first page (up to 500) of matching assets with their embedded vulnerability findings.",
+  "docker_parameters": "search-insightvm-assets",
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "arguments": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Search Assets Arguments",
+    "properties": {
+      "ip": {
+        "description": "Filter by exact IP address (e.g. '10.0.0.1')",
+        "type": "string"
+      },
+      "host_name": {
+        "description": "Filter by host name (substring match)",
+        "type": "string"
+      },
+      "tag": {
+        "description": "Filter by asset tag name",
+        "type": "string"
+      },
+      "os_family": {
+        "description": "Filter by OS family (e.g. 'Windows', 'Linux')",
+        "type": "string"
+      },
+      "severity_filter": {
+        "description": "Vulnerability severity filter using InsightVM Query Builder syntax (e.g. \"severity IN ['Critical', 'Severe']\")",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "results": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "title": "Matching InsightVM Assets",
+    "items": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ip": { "type": "string" },
+        "host_name": { "type": "string" },
+        "risk_score": { "type": "number" },
+        "critical_vulnerabilities": { "type": "integer" },
+        "severe_vulnerabilities": { "type": "integer" },
+        "os_description": { "type": "string" },
+        "new": { "type": "array" },
+        "remediated": { "type": "array" },
+        "same": { "type": "array" }
+      }
+    }
+  }
+}

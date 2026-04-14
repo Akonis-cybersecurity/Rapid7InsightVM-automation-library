@@ -1,0 +1,39 @@
+{
+  "name": "Pull InsightVM Assets & Vulnerabilities",
+  "description": "Polls Rapid7 InsightVM for assets and their vulnerability findings, and pushes them as events to Sekoia. Uses differential mode (new / remediated) to minimize data volume.",
+  "docker_parameters": "pull-insightvm-assets-vulns",
+  "uuid": "bbda443f-a826-4855-a854-cbac42ff0480",
+  "arguments": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "InsightVM Connector Configuration",
+    "properties": {
+      "intake_key": {
+        "description": "Sekoia intake key",
+        "type": "string",
+        "in": "body"
+      },
+      "polling_interval": {
+        "description": "Polling interval in minutes",
+        "type": "integer",
+        "default": 5
+      },
+      "page_size": {
+        "description": "API page size — max 500 per Rapid7 recommendation",
+        "type": "integer",
+        "default": 500
+      },
+      "severity_filter": {
+        "description": "Vulnerability severity filter using InsightVM Query Builder syntax. Example: \"severity IN ['Critical', 'Severe']\". Leave empty to fetch all severities.",
+        "type": "string",
+        "default": "severity IN ['Critical', 'Severe']"
+      },
+      "include_same": {
+        "description": "Include unchanged vulnerabilities in each polling cycle (increases data volume)",
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "required": ["intake_key"]
+  }
+}

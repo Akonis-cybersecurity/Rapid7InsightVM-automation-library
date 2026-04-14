@@ -1,0 +1,51 @@
+{
+  "name": "Search InsightVM Vulnerabilities",
+  "description": "Searches the Rapid7 InsightVM vulnerability catalogue by CVE identifier, severity, minimum CVSS v3 score, or vulnerability key. Returns matching vulnerability definitions.",
+  "docker_parameters": "search-insightvm-vulnerabilities",
+  "uuid": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "arguments": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Search Vulnerabilities Arguments",
+    "properties": {
+      "cve": {
+        "description": "Filter by CVE identifier (e.g. 'CVE-2024-1234')",
+        "type": "string"
+      },
+      "severity": {
+        "description": "Filter by severity level",
+        "type": "string",
+        "enum": ["Critical", "Severe", "Moderate"]
+      },
+      "min_cvss_v3": {
+        "description": "Minimum CVSS v3 score (inclusive, 0.0–10.0)",
+        "type": "number",
+        "minimum": 0,
+        "maximum": 10
+      },
+      "vuln_key": {
+        "description": "Filter by vulnerability key (e.g. 'unix-anonymous-root-logins')",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "results": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "title": "Matching Vulnerability Definitions",
+    "items": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "severity": { "type": "string" },
+        "severity_score": { "type": "number" },
+        "cvss_v3_score": { "type": "number" },
+        "cvss_v3_vector": { "type": "string" },
+        "cves": { "type": "string" },
+        "exploits": { "type": "array" }
+      }
+    }
+  }
+}
