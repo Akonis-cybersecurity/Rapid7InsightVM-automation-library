@@ -10,7 +10,7 @@ python = ">=3.11,<3.13"
 sekoia-automation-sdk = "^1.22.5"
 requests = "^2.31"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "*"
 pytest-cov = "*"
 requests-mock = "*"
