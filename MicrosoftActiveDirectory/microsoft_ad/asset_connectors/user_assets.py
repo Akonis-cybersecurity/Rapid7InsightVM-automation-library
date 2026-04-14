@@ -119,9 +119,7 @@ class MicrosoftADUserAssetConnector(AssetConnector, LDAPClient):
         """
         pwd_last_set = user_attributes.pwdLastSet
         last_time_password_change = (
-            float(int(pwd_last_set.timestamp()))
-            if pwd_last_set and pwd_last_set.year > 1601
-            else None
+            float(int(pwd_last_set.timestamp())) if pwd_last_set and pwd_last_set.year > 1601 else None
         )
 
         data = UserDataObject(
