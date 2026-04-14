@@ -47,6 +47,7 @@ class MicrosoftADUserAssetConnector(AssetConnector, LDAPClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.context = PersistentJSON("context.json", self._data_path)
+        self._latest_time: str | None = None
 
     @property
     def most_recent_datetime(self) -> str | None:
